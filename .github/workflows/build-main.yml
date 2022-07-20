@@ -29,6 +29,7 @@ jobs:
         run: npm run test:ci
       - uses: ./
         if: always()
+        continue-on-error: true
         with:
           jobName: "lint-and-test"
           stepName: "run tests"

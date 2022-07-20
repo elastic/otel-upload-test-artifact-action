@@ -1,6 +1,10 @@
 # Open Telemetry Upload Test Artifact Action
 
-This action is a companion Action to [otel-export-trace-action](https://github.com/marketplace/actions/opentelemetry-export-trace). This Action will transform a Test Report to an OTLP Trace log file and Upload as a Github Artifact so that otel-export-trace-action can download and link to the Github Workflow step span that produced it before exporting to the OTLP destination.
+**NOTE**: This action is a forked version of [opentelemetry-upload-trace-artifact](https://github.com/marketplace/actions/opentelemetry-upload-trace-artifact).
+
+This action is a companion Action to [otel-export-trace-action](https://github.com/elastic/otel-export-trace-action).
+
+This Action will transform a Test Report to an OTLP Trace log file and Upload as a Github Artifact so that otel-export-trace-action can download and link to the Github Workflow step span that produced it before exporting to the OTLP destination.
 
 ## Usage
 
@@ -25,8 +29,9 @@ jobs:
         run: npm run lint:ci
       - name: run tests
         run: npm run test:ci
-      - uses: inception-health/otel-upload-test-artifact-action@latest
+      - uses: elastic/otel-upload-test-artifact-action@latest
         if: always()
+        continue-on-error: true
         with:
           jobName: "lint-and-test"
           stepName: "run tests"
@@ -52,10 +57,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: export trace
-        uses: inception-health/otel-export-trace-action@latest
+        uses: elastic/otel-export-trace-action@latest
         with:
-          otlpEndpoint: grpc://api.honeycomb.io:443/
-          otlpHeaders: ${{ secrets.DELIVERY_OTLP_HEADERS }}
+          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT }}
+          otlpHeaders: ${{ secrets.OTLP_HEADERS }}
+          otelServiceName: ${{ github.repository }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           runId: ${{ github.event.workflow_run.id }}
 ```
@@ -86,8 +92,9 @@ jobs:
         run: npm run lint:ci
       - name: run tests
         run: npm run test:ci
-      - uses: inception-health/otel-upload-test-artifact-action@latest
+      - uses: elastic/otel-upload-test-artifact-action@latest
         if: always()
+        continue-on-error: true
         with:
           jobName: "lint-and-test"
           stepName: "run tests (${{ matrix.os }})"
@@ -119,8 +126,9 @@ jobs:
         run: npm run lint:ci
       - name: run tests
         run: npm run test:ci
-      - uses: inception-health/otel-upload-test-artifact-action@latest
+      - uses: elastic/otel-upload-test-artifact-action@latest
         if: always()
+        continue-on-error: true
         with:
           jobName: "lint-and-test"
           stepName: "run tests"
